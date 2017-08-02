@@ -1004,6 +1004,38 @@ def do_reject(*args, **kwargs):
 
 
 @contextfilter
+def do_existcheck(context, seq=None, checkseq=None, attribute=None):
+    """Filters a sequence of objects by applying a test to each object,
+    and checking existence of the objects.
+
+    If no test is specified, the attribute's value will be evaluated as
+    a boolean.
+
+    Example usage:
+
+    .. sourcecode:: jinja
+        {%- set l = [1, 2, 3, 4] -%}
+        {%- set d = {1: 10, 2: 20, 3: 30} -%}
+        {{ l|exist(1) }}
+        {{ l|exist([1]) }}
+        {{ l|exist([1, 2]) }}
+        {{ d|exist(3) }}
+        {{ d|exist([3]) }}
+        {{ d|exist([1, 3]) }}
+
+    """
+
+    if isinstance(checkseq, (int, str)):
+        checkseq = [checkseq]
+    if attribute is not None:
+        checkseq = [attribute]
+    for item in checkseq:
+        if item in seq:
+            return True
+    return False
+
+
+@contextfilter
 def do_selectattr(*args, **kwargs):
     """Filters a sequence of objects by applying a test to the specified
     attribute of each object, and only selecting the objects with the
@@ -1187,4 +1219,5 @@ FILTERS = {
     'wordwrap':             do_wordwrap,
     'xmlattr':              do_xmlattr,
     'tojson':               do_tojson,
+    'exist':                do_existcheck,
 }
